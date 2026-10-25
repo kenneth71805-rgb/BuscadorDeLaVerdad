@@ -2,22 +2,21 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Category;
 use Illuminate\Database\Seeder;
 
+/** Safe for production: seeds categories only. No users, no passwords. */
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $categories = [
+            'News', 'Articles and Features', 'Editorial and Opinion', 'Photojournalism and Galleries',
+            'Sports', 'Literary and Creative Works', 'Events and Campus Activities', 'Special Issues and Publications',
+        ];
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        foreach ($categories as $i => $name) {
+            Category::firstOrCreate(['slug' => str($name)->slug()->toString()], ['name' => $name, 'sort_order' => $i]);
+        }
     }
 }
