@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/fraunces';
+@import '@fontsource-variable/source-serif-4';
 
 @plugin 'tailwindcss-animate';
 
@@ -7,8 +9,20 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+    --font-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+    --font-serif: 'Source Serif 4 Variable', Georgia, 'Times New Roman', serif;
+
+    --color-forest: #14532d;
+    --color-forest-deep: #0d3820;
+    --color-paper: #fbf7ee;
+    --color-paper-edge: #e9e1cf;
+    --color-ink: #1c1917;
+    --color-ink-soft: #57534e;
+    --color-brass: #a8801f;
+    --color-brass-text: #7a5a0e;
+
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+        ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);

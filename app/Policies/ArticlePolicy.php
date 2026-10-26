@@ -25,6 +25,12 @@ class ArticlePolicy
 
     public function update(User $user, Article $article): bool
     {
+        // Live and archived articles are never edited in place; corrections
+        // will go through a pending revision (planned) so the public text stays stable.
+        if (in_array($article->status, [S::Published, S::Archived], true)) {
+            return false;
+        }
+
         if ($user->hasRole(Role::Admin, Role::EditorInChief)) {
             return true;
         }

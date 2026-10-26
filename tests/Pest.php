@@ -48,3 +48,9 @@ function something()
 {
     // ..
 }
+
+// Page-render tests must not depend on a built asset manifest or a running SSR server.
+pest()->beforeEach(function () {
+    $this->withoutVite();
+    config(['inertia.ssr.enabled' => false]);
+})->in('Feature');

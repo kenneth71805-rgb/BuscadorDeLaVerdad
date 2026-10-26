@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ArticleStatus;
 use Database\Factories\ArticleFactory;
+use App\Enums\Role;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -55,5 +56,29 @@ class Article extends Model
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now())
             ->whereHas('category', fn (Builder $q) => $q->where('is_active', true));
+    }
+
+    /** Records a staff member may see: everything for Admin/EIC, own categories for a Head. */
+    public function scopeVisibleTo(Builder $query, User $user): Builder
+    {
+        if ($user->hasRole(Role::Admin, Role::EditorInChief)) {
+            return $query;
+        }
+
+        if ($user->hasRole(Role::CategoryHead)) {
+            return $query->whereIn('category_id', $user->categories()->pluck('categories.id'));
+        }
+
+        return $query->whereRaw('1 = 0');
+    }
+
+    public function readingMinutes(): int
+    {
+        return max(1, (int) ceil(preg_match_all('/\p{L}+/u', $this->body) / 200));
+    }
+
+    public function excerpt(int $limit = 180): string
+    {
+        return \Illuminate\Support\Str::limit(trim(preg_replace('/\s+/', ' ', $this->body)), $limit);
     }
 }
