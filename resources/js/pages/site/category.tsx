@@ -21,7 +21,9 @@ export default function Category({ nav, category, articles }: Props) {
             ) : (
                 <ul className="divide-paper-edge mt-4 divide-y">
                     {articles.data.map((s) => (
-                        <li key={s.url} className="py-5">
+                        <li key={s.url} className="flex gap-4 py-5">
+                            {s.image && <img src={s.image.url} alt={s.image.alt} loading="lazy" className="hidden aspect-[4/3] w-40 shrink-0 object-cover sm:block" />}
+                            <div>
                             <h2 className="font-display text-2xl leading-snug">
                                 <Link href={s.url} className="hover:text-forest">
                                     {s.title}
@@ -31,6 +33,7 @@ export default function Category({ nav, category, articles }: Props) {
                             <p className="text-ink-soft mt-1 text-xs">
                                 By {s.author} · {formatDate(s.published_at)}
                             </p>
+                            </div>
                         </li>
                     ))}
                 </ul>

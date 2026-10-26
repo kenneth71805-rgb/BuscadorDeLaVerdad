@@ -10,6 +10,7 @@ use App\Models\Article;
 use App\Models\ArticleStatusHistory;
 use App\Models\AuditLog;
 use App\Models\Category;
+use App\Models\Media;
 use App\Services\ArticleWorkflow;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -67,7 +68,7 @@ class ArticleController extends Controller
     {
         $this->authorize('create', Article::class);
 
-        return Inertia::render('articles/create', ['categories' => $this->writableCategories($request)]);
+        return Inertia::render('articles/create', ['categories' => $this->writableCategories($request), 'media' => $this->pickableMedia($request)]);
     }
 
     public function store(ArticleRequest $request)
@@ -75,7 +76,7 @@ class ArticleController extends Controller
         $this->authorize('create', Article::class);
 
         $article = DB::transaction(function () use ($request) {
-            $article = new Article($request->safe()->only(['category_id', 'title', 'subtitle', 'body']));
+            $article = new Article($request->safe()->only(['category_id', 'title', 'subtitle', 'body', 'lead_media_id']));
             $article->author_id = $request->user()->id;
             $article->slug = $this->uniqueSlug($article->title);
             $article->status = S::Draft;
@@ -97,7 +98,7 @@ class ArticleController extends Controller
     {
         $this->authorize('view', $article);
         $user = $request->user();
-        $article->load(['category:id,name,slug', 'author:id,name', 'statusHistory.actor:id,name']);
+        $article->load(['category:id,name,slug', 'author:id,name', 'leadMedia', 'statusHistory.actor:id,name']);
 
         return Inertia::render('articles/show', [
             'article' => [
@@ -113,6 +114,11 @@ class ArticleController extends Controller
                 'public_url' => $article->status === S::Published
                     ? route('site.article', [$article->category->slug, $article->slug], false) : null,
             ],
+            'lead' => $article->leadMedia ? [
+                'id' => $article->leadMedia->id, 'url' => $article->leadMedia->url('large'), 'alt' => $article->leadMedia->alt,
+                'caption' => $article->leadMedia->caption, 'credit' => $article->leadMedia->credit,
+                'is_public' => $article->leadMedia->is_public, 'can_release' => $user->can('release', $article->leadMedia),
+            ] : null,
             'can_edit' => $user->can('update', $article),
             'actions' => $this->actionsFor($request, $article),
             'history' => $article->statusHistory->map(fn (ArticleStatusHistory $h) => [
@@ -131,8 +137,9 @@ class ArticleController extends Controller
         $this->authorize('update', $article);
 
         return Inertia::render('articles/edit', [
-            'article' => $article->only(['id', 'title', 'subtitle', 'body', 'category_id']),
+            'article' => $article->only(['id', 'title', 'subtitle', 'body', 'category_id', 'lead_media_id']),
             'categories' => $this->writableCategories($request),
+            'media' => $this->pickableMedia($request),
         ]);
     }
 
@@ -141,7 +148,7 @@ class ArticleController extends Controller
         $this->authorize('update', $article); // slug and status are never touched here
 
         DB::transaction(function () use ($request, $article) {
-            $article->update($request->safe()->only(['category_id', 'title', 'subtitle', 'body']));
+            $article->update($request->safe()->only(['category_id', 'title', 'subtitle', 'body', 'lead_media_id']));
             AuditLog::record('article.updated', $article, [], $request->user());
         });
 
@@ -188,6 +195,17 @@ class ArticleController extends Controller
                 'needs_schedule' => $to === S::Scheduled,
                 'danger' => in_array($to, [S::Rejected, S::RevisionRequested], true),
             ])->values()->all();
+    }
+
+    /** Photos the writer may attach: their own uploads (Admin and Editor-in-Chief may use any). */
+    private function pickableMedia(Request $request): array
+    {
+        $user = $request->user();
+
+        return Media::query()
+            ->when(! $user->hasRole(Role::Admin, Role::EditorInChief), fn ($q) => $q->where('uploader_id', $user->id))
+            ->latest('id')->limit(60)->get()
+            ->map(fn (Media $m) => ['id' => $m->id, 'url' => $m->url('thumb'), 'alt' => $m->alt, 'is_public' => $m->is_public])->all();
     }
 
     private function writableCategories(Request $request): array

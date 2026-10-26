@@ -19,7 +19,7 @@ class Article extends Model
 
     // status, published_at and scheduled_for are NOT mass-assignable:
     // they change only through App\Services\ArticleWorkflow.
-    protected $fillable = ['category_id', 'author_id', 'slug', 'title', 'subtitle', 'body'];
+    protected $fillable = ['category_id', 'author_id', 'slug', 'title', 'subtitle', 'body', 'lead_media_id'];
 
     protected function casts(): array
     {
@@ -33,6 +33,11 @@ class Article extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function leadMedia(): BelongsTo
+    {
+        return $this->belongsTo(Media::class, 'lead_media_id');
     }
 
     public function author(): BelongsTo

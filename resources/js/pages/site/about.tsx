@@ -1,7 +1,7 @@
 import PublicLayout, { NavCategory } from '@/components/public-layout';
 import { Head } from '@inertiajs/react';
 
-type Profile = { id: number; name: string; position: string; category: string | null; bio: string | null; link_url: string | null };
+type Profile = { id: number; name: string; position: string; category: string | null; bio: string | null; link_url: string | null; photo: { url: string; alt: string } | null };
 
 type Props = {
     nav: NavCategory[];
@@ -36,6 +36,7 @@ function People({ title, people }: { title: string; people: Profile[] }) {
             <ul className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {people.map((p) => (
                     <li key={p.id}>
+                        {p.photo && <img src={p.photo.url} alt={p.photo.alt} loading="lazy" className="mb-2 aspect-square w-32 rounded-full object-cover" />}
                         <h3 className="font-display text-xl leading-snug">{p.name}</h3>
                         <p className="text-brass-text text-sm tracking-wide uppercase">{p.position}{p.category ? ` · ${p.category}` : ''}</p>
                         {p.bio && <p className="text-ink-soft mt-1 text-sm">{p.bio}</p>}

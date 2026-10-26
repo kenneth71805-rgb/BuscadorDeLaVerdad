@@ -17,7 +17,7 @@ class SearchController extends Controller
 
         if (mb_strlen($q) >= 2) {
             $like = '%'.addcslashes($q, '%_\\').'%';
-            $results = Article::publiclyVisible()->with(['category:id,name,slug', 'author:id,name'])
+            $results = Article::publiclyVisible()->with(['category:id,name,slug', 'author:id,name', 'leadMedia'])
                 ->where(fn ($w) => $w->where('title', 'like', $like)
                     ->orWhere('subtitle', 'like', $like)->orWhere('body', 'like', $like))
                 ->latest('published_at')->paginate(10)->withQueryString()

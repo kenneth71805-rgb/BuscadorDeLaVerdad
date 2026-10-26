@@ -43,6 +43,10 @@ class ArticleWorkflow
                 throw new InvalidStatusTransition('A written reason is required for this decision.');
             }
 
+            if (in_array($to, [S::Scheduled, S::Published], true) && $article->leadMedia && ! $article->leadMedia->is_public) {
+                throw new InvalidStatusTransition('The lead photo has not been approved for public release. Approve it first (or remove it from the article).');
+            }
+
             if ($to === S::Scheduled) {
                 if ($scheduledFor === null || $scheduledFor->isPast()) {
                     throw new InvalidStatusTransition('Scheduling needs a future date and time.');

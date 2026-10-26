@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Site;
 use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Gallery;
+use App\Models\Issue;
 use App\Support\PublicData;
 use Inertia\Inertia;
 
@@ -12,7 +14,7 @@ class HomeController extends Controller
 {
     public function __invoke()
     {
-        $public = fn () => Article::publiclyVisible()->with(['category:id,name,slug', 'author:id,name']);
+        $public = fn () => Article::publiclyVisible()->with(['category:id,name,slug', 'author:id,name', 'leadMedia']);
 
         $lead = $public()->latest('published_at')->first();
         $latest = $public()->when($lead, fn ($q) => $q->whereKeyNot($lead->id))
@@ -33,6 +35,13 @@ class HomeController extends Controller
             'lead' => $lead ? PublicData::card($lead) : null,
             'latest' => $latest->map(fn (Article $a) => PublicData::card($a))->all(),
             'sections' => $sections,
+            'galleries' => Gallery::onPublicSite()->with(['items' => fn ($q) => $q->where('media.is_public', true)])
+                ->latest('published_at')->limit(3)->get()->map(fn (Gallery $g) => [
+                    'title' => $g->title, 'url' => route('site.gallery', $g->slug, false),
+                    'cover' => ['url' => $g->items->first()->url('medium'), 'alt' => $g->items->first()->alt],
+                ]),
+            'issues' => Issue::publicOnly()->with('cover')->latest('issue_date')->limit(3)->get()
+                ->map(fn (Issue $i) => IssueController::card($i)),
         ]);
     }
 }

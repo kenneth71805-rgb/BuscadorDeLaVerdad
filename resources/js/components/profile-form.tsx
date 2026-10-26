@@ -5,12 +5,12 @@ import { Label } from '@/components/ui/label';
 import { useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
-export type ProfileData = { id: number; name: string; position: string; category_id: number | null; bio: string | null; link_url: string | null; sort_order: number; is_public: boolean; archived: boolean };
+export type ProfileData = { id: number; name: string; position: string; category_id: number | null; bio: string | null; link_url: string | null; sort_order: number; is_public: boolean; archived: boolean; photo_url?: string | null };
 
-type FormData = { name: string; position: string; category_id: number | ''; bio: string; link_url: string; sort_order: number; is_public: boolean; archived: boolean };
+type FormData = { name: string; position: string; category_id: number | ''; bio: string; link_url: string; sort_order: number; is_public: boolean; archived: boolean; photo: File | null; remove_photo: boolean; _method: string };
 
 export default function ProfileForm({ profile, categories }: { profile?: ProfileData; categories: { id: number; name: string }[] }) {
-    const { data, setData, post, put, processing, errors } = useForm<FormData>({
+    const { data, setData, post, processing, errors } = useForm<FormData>({
         name: profile?.name ?? '',
         position: profile?.position ?? '',
         category_id: profile?.category_id ?? '',
@@ -19,12 +19,16 @@ export default function ProfileForm({ profile, categories }: { profile?: Profile
         sort_order: profile?.sort_order ?? 0,
         is_public: profile?.is_public ?? false,
         archived: profile?.archived ?? false,
+        photo: null,
+        remove_photo: false,
+        _method: profile ? 'put' : 'post',
     });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        if (profile) put(route('admin.profiles.update', profile.id));
-        else post(route('admin.profiles.store'));
+        // Files need multipart; browsers cannot send PUT with files, so Laravel reads the _method field.
+        if (profile) post(route('admin.profiles.update', profile.id), { forceFormData: true });
+        else post(route('admin.profiles.store'), { forceFormData: true });
     };
 
     return (
@@ -65,6 +69,19 @@ export default function ProfileForm({ profile, categories }: { profile?: Profile
                 <Label htmlFor="sort_order">Display order (lower comes first)</Label>
                 <Input id="sort_order" type="number" min={0} max={999} value={data.sort_order} onChange={(e) => setData('sort_order', Number(e.target.value))} />
                 <InputError message={errors.sort_order} />
+            </div>
+            <div className="grid gap-2">
+                <Label htmlFor="photo">Portrait photo (optional; JPEG, PNG or WebP)</Label>
+                {profile?.photo_url && <img src={profile.photo_url} alt="Current portrait" className="size-24 rounded-full object-cover" />}
+                <input id="photo" type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => setData('photo', e.target.files?.[0] ?? null)} />
+                {profile?.photo_url && (
+                    <label className="flex items-center gap-2 text-sm">
+                        <input type="checkbox" checked={data.remove_photo} onChange={(e) => setData('remove_photo', e.target.checked)} />
+                        Remove the current photo
+                    </label>
+                )}
+                <p className="text-muted-foreground text-xs">Only upload a portrait with the person&apos;s consent. It is shown publicly once the profile is approved.</p>
+                <InputError message={errors.photo} />
             </div>
             <p className="text-muted-foreground text-xs">Profiles hold only what you type here. Do not enter private emails or phone numbers: this text is shown to the public.</p>
             <label className="flex items-center gap-2 text-sm">

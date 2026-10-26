@@ -13,6 +13,7 @@ export type Card = {
     published_at: string | null;
     minutes: number;
     url: string;
+    image: { url: string; alt: string; caption: string | null; credit: string | null; width: number; height: number } | null;
 };
 
 export function formatDate(iso: string | null): string {
@@ -65,6 +66,21 @@ export default function PublicLayout({ nav, children }: PropsWithChildren<{ nav:
                                         ))}
                                     </ul>
                                 </details>
+                            </li>
+                            <li>
+                                <Link href="/galleries" className="hover:text-forest underline-offset-4 hover:underline">
+                                    Photos
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/issues" className="hover:text-forest underline-offset-4 hover:underline">
+                                    Issues
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/archives" className="hover:text-forest underline-offset-4 hover:underline">
+                                    Archives
+                                </Link>
                             </li>
                             <li>
                                 <Link href="/about" className="hover:text-forest underline-offset-4 hover:underline">

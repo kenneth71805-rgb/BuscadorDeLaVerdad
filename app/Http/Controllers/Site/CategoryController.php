@@ -14,7 +14,7 @@ class CategoryController extends Controller
     {
         $category = Category::where('slug', $categorySlug)->where('is_active', true)->firstOrFail();
 
-        $articles = Article::publiclyVisible()->with(['category:id,name,slug', 'author:id,name'])
+        $articles = Article::publiclyVisible()->with(['category:id,name,slug', 'author:id,name', 'leadMedia'])
             ->where('category_id', $category->id)->latest('published_at')
             ->paginate(12)->withQueryString()
             ->through(fn (Article $a) => PublicData::card($a));

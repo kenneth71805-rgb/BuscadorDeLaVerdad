@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardRedirectController;
+use App\Http\Controllers\MediaFileController;
 use App\Http\Controllers\Site;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -17,6 +18,17 @@ Route::get('dashboard', DashboardRedirectController::class)->middleware('auth')-
 require __DIR__.'/staff.php';
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
+
+// Image files: served from private storage; access decided per photo (public approval or staff permission).
+Route::get('media/{media}/{variant}', MediaFileController::class)->whereNumber('media')->name('media.file');
+
+Route::get('galleries', [Site\GalleryController::class, 'index'])->name('site.galleries');
+Route::get('galleries/{slug}', [Site\GalleryController::class, 'show'])->where('slug', '[a-z0-9-]+')->name('site.gallery');
+Route::get('issues', [Site\IssueController::class, 'index'])->name('site.issues');
+Route::get('issues/{slug}', [Site\IssueController::class, 'show'])->where('slug', '[a-z0-9-]+')->name('site.issue');
+Route::get('issues/{slug}/download', [Site\IssueController::class, 'download'])->where('slug', '[a-z0-9-]+')->name('site.issue.download');
+Route::get('archives', [Site\ArchiveController::class, 'index'])->name('site.archives');
+Route::get('archives/{year}', [Site\ArchiveController::class, 'year'])->whereNumber('year')->name('site.archive');
 
 Route::get('about', Site\AboutController::class)->name('site.about');
 Route::get('contact', [Site\ContactController::class, 'show'])->name('site.contact');

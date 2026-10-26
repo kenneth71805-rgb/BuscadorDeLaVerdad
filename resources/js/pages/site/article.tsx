@@ -3,7 +3,7 @@ import { Head, Link } from '@inertiajs/react';
 
 type Props = {
     nav: NavCategory[];
-    article: Card & { paragraphs: string[] };
+    article: Card & { paragraphs: string[]; lead: { url: string; alt: string; caption: string | null; credit: string | null; width: number; height: number } | null };
     related: Card[];
 };
 
@@ -18,6 +18,7 @@ export default function Article({ nav, article, related }: Props) {
                 <meta property="og:title" content={article.title} />
                 <meta property="og:description" content={description} />
                 <meta property="og:site_name" content="Los Sueños – Buscador De La Verdad" />
+                {article.lead && <meta property="og:image" content={article.lead.url} />}
             </Head>
 
             <article className="mx-auto max-w-[68ch]">
@@ -30,6 +31,17 @@ export default function Article({ nav, article, related }: Props) {
                     By <span className="text-ink font-medium">{article.author}</span> · <time dateTime={article.published_at ?? undefined}>{formatDate(article.published_at)}</time> ·{' '}
                     {article.minutes} min read
                 </p>
+
+                {article.lead && (
+                    <figure className="mt-6">
+                        <img src={article.lead.url} alt={article.lead.alt} width={article.lead.width} height={article.lead.height} className="w-full" />
+                        {(article.lead.caption || article.lead.credit) && (
+                            <figcaption className="text-ink-soft mt-1 text-sm">
+                                {article.lead.caption} {article.lead.credit && <span className="italic">Photo: {article.lead.credit}</span>}
+                            </figcaption>
+                        )}
+                    </figure>
+                )}
 
                 <div className="mt-6 text-[1.125rem] leading-[1.8]">
                     {article.paragraphs.map((p, i) => (

@@ -27,6 +27,17 @@ class PublicData
             'published_at' => $a->published_at?->toIso8601String(),
             'minutes' => $a->readingMinutes(),
             'url' => route('site.article', [$a->category->slug, $a->slug], false),
+            'image' => self::image($a, 'medium'),
         ];
+    }
+
+    /** Only photos an editor approved for public release are ever exposed. */
+    public static function image(Article $a, string $variant): ?array
+    {
+        $m = $a->leadMedia;
+
+        return $m && $m->is_public
+            ? ['url' => $m->url($variant), 'alt' => $m->alt, 'caption' => $m->caption, 'credit' => $m->credit, 'width' => $m->width, 'height' => $m->height]
+            : null;
     }
 }

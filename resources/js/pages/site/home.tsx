@@ -6,9 +6,11 @@ type Props = {
     lead: Card | null;
     latest: Card[];
     sections: { name: string; slug: string; stories: Card[] }[];
+    galleries: { title: string; url: string; cover: { url: string; alt: string } }[];
+    issues: { title: string; slug: string; url: string; issue_date: string; cover: { url: string; alt: string } | null }[];
 };
 
-export default function Home({ nav, lead, latest, sections }: Props) {
+export default function Home({ nav, lead, latest, sections, galleries, issues }: Props) {
     return (
         <PublicLayout nav={nav}>
             <Head title="Home">
@@ -24,6 +26,11 @@ export default function Home({ nav, lead, latest, sections }: Props) {
                 <>
                     <div className="grid gap-10 lg:grid-cols-12">
                         <article className="lg:col-span-8">
+                            {lead.image && (
+                                <Link href={lead.url} className="mb-4 block">
+                                    <img src={lead.image.url} alt={lead.image.alt} width={lead.image.width} height={lead.image.height} className="aspect-[3/2] w-full object-cover" />
+                                </Link>
+                            )}
                             <Link href={`/${lead.category.slug}`} className="text-brass-text text-xs tracking-widest uppercase">
                                 {lead.category.name}
                             </Link>
@@ -87,6 +94,48 @@ export default function Home({ nav, lead, latest, sections }: Props) {
                             </div>
                         </section>
                     ))}
+
+                    {galleries.length > 0 && (
+                        <section className="mt-12" aria-labelledby="photo-highlights">
+                            <div className="border-ink flex items-baseline justify-between border-b-2 pb-1">
+                                <h2 id="photo-highlights" className="font-display text-forest text-2xl">
+                                    Photojournalism
+                                </h2>
+                                <Link href="/galleries" className="text-sm underline">
+                                    All galleries
+                                </Link>
+                            </div>
+                            <div className="mt-4 grid gap-6 sm:grid-cols-3">
+                                {galleries.map((g) => (
+                                    <Link key={g.url} href={g.url} className="block">
+                                        <img src={g.cover.url} alt={g.cover.alt} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+                                        <span className="font-display mt-2 block text-lg leading-snug">{g.title}</span>
+                                    </Link>
+                                ))}
+                            </div>
+                        </section>
+                    )}
+
+                    {issues.length > 0 && (
+                        <section className="mt-12" aria-labelledby="recent-issues">
+                            <div className="border-ink flex items-baseline justify-between border-b-2 pb-1">
+                                <h2 id="recent-issues" className="font-display text-forest text-2xl">
+                                    Recent issues
+                                </h2>
+                                <Link href="/issues" className="text-sm underline">
+                                    All issues
+                                </Link>
+                            </div>
+                            <div className="mt-4 grid gap-6 sm:grid-cols-3">
+                                {issues.map((i) => (
+                                    <Link key={i.slug} href={i.url} className="block">
+                                        {i.cover ? <img src={i.cover.url} alt={i.cover.alt} loading="lazy" className="aspect-[3/4] w-full object-cover" /> : <div className="bg-paper-edge text-ink-soft flex aspect-[3/4] items-center justify-center text-sm">No cover</div>}
+                                        <span className="font-display mt-2 block text-lg leading-snug">{i.title}</span>
+                                    </Link>
+                                ))}
+                            </div>
+                        </section>
+                    )}
                 </>
             )}
         </PublicLayout>

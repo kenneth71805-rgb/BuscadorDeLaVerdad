@@ -1,9 +1,9 @@
-import ArticleForm, { type ArticleDraft } from '@/components/article-form';
+import ArticleForm, { type ArticleDraft, type MediaOption } from '@/components/article-form';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 
-export default function Edit({ article, categories }: { article: ArticleDraft; categories: { id: number; name: string }[] }) {
+export default function Edit({ article, categories, media }: { article: ArticleDraft; categories: { id: number; name: string }[]; media: MediaOption[] }) {
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Articles', href: '/articles' },
         { title: 'Edit', href: `/articles/${article.id}/edit` },
@@ -14,7 +14,7 @@ export default function Edit({ article, categories }: { article: ArticleDraft; c
             <Head title={`Edit: ${article.title}`} />
             <div className="p-4">
                 <h1 className="mb-6 text-2xl font-semibold">Edit article</h1>
-                <ArticleForm article={article} categories={categories} />
+                <ArticleForm article={article} categories={categories} media={media} />
             </div>
         </AppLayout>
     );

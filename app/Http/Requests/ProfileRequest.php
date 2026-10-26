@@ -23,6 +23,8 @@ class ProfileRequest extends FormRequest
             'sort_order' => ['required', 'integer', 'min:0', 'max:999'],
             'is_public' => ['required', 'boolean'],
             'archived' => ['required', 'boolean'],
+            'photo' => ['nullable', 'file', 'max:8192'],
+            'remove_photo' => ['nullable', 'boolean'],
         ];
     }
 }

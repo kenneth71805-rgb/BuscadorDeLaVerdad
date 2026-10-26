@@ -8,7 +8,7 @@ class ReservedSlugs
     public const LIST = [
         'admin', 'editor', 'category', 'categories', 'articles', 'inbox', 'login', 'logout', 'register', 'dashboard',
         'settings', 'search', 'about', 'contact', 'forgot-password', 'reset-password', 'verify-email', 'confirm-password',
-        'email', 'up', 'storage', 'build', 'api', 'issues', 'galleries', 'archives', 'events', 'feed', 'sitemap',
+        'email', 'up', 'storage', 'build', 'api', 'issues', 'galleries', 'archives', 'events', 'media', 'newsroom', 'feed', 'sitemap',
     ];
 
     public static function has(string $slug): bool

@@ -21,12 +21,13 @@ type Props = {
         published_at: string | null;
         public_url: string | null;
     };
+    lead: { id: number; url: string; alt: string; caption: string | null; credit: string | null; is_public: boolean; can_release: boolean } | null;
     can_edit: boolean;
     actions: Action[];
     history: { id: number; from: string | null; to: string; actor: string; reason: string | null; at: string | null }[];
 };
 
-export default function Show({ article, can_edit, actions, history }: Props) {
+export default function Show({ article, lead, can_edit, actions, history }: Props) {
     const { flash, errors } = usePage<SharedData & { errors: Record<string, string> }>().props;
     const [reason, setReason] = useState('');
     const [scheduledFor, setScheduledFor] = useState('');
@@ -61,6 +62,19 @@ export default function Show({ article, can_edit, actions, history }: Props) {
                     <h1 className="font-display mt-1 text-3xl leading-tight font-semibold">{article.title}</h1>
                     {article.subtitle && <p className="text-muted-foreground mt-2 text-lg">{article.subtitle}</p>}
                     <p className="text-muted-foreground mt-2 text-sm">By {article.author}</p>
+                    {lead && (
+                        <figure className="mt-4 max-w-[68ch]">
+                            <img src={lead.url} alt={lead.alt} className="w-full rounded" />
+                            <figcaption className="text-muted-foreground mt-1 text-xs">
+                                {lead.caption} {lead.credit && `Photo: ${lead.credit}`} · {lead.is_public ? 'Approved for public release' : 'NOT yet approved for public release'}
+                            </figcaption>
+                            {lead.can_release && (
+                                <Button type="button" size="sm" className="mt-2" variant={lead.is_public ? 'outline' : 'default'} onClick={() => router.put(route('media.release', lead.id), { public: !lead.is_public }, { preserveScroll: true })}>
+                                    {lead.is_public ? 'Withdraw photo from public' : 'Approve photo for public release'}
+                                </Button>
+                            )}
+                        </figure>
+                    )}
                     <div className="mt-6 max-w-[68ch] font-serif text-lg leading-[1.8]">
                         {article.paragraphs.map((p, i) => (
                             <p key={i} className="mb-4">

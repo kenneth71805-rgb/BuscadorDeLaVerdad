@@ -5,16 +5,18 @@ import { Label } from '@/components/ui/label';
 import { useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
-export type ArticleDraft = { id: number; title: string; subtitle: string | null; body: string; category_id: number };
+export type ArticleDraft = { id: number; title: string; subtitle: string | null; body: string; category_id: number; lead_media_id: number | null };
+export type MediaOption = { id: number; url: string; alt: string; is_public: boolean };
 
-type FormData = { title: string; subtitle: string; body: string; category_id: number | '' };
+type FormData = { title: string; subtitle: string; body: string; category_id: number | ''; lead_media_id: number | null };
 
-export default function ArticleForm({ article, categories }: { article?: ArticleDraft; categories: { id: number; name: string }[] }) {
+export default function ArticleForm({ article, categories, media }: { article?: ArticleDraft; categories: { id: number; name: string }[]; media: MediaOption[] }) {
     const { data, setData, post, put, processing, errors } = useForm<FormData>({
         title: article?.title ?? '',
         subtitle: article?.subtitle ?? '',
         body: article?.body ?? '',
         category_id: article?.category_id ?? (categories.length === 1 ? categories[0].id : ''),
+        lead_media_id: article?.lead_media_id ?? null,
     });
 
     const submit: FormEventHandler = (e) => {
@@ -76,6 +78,27 @@ export default function ArticleForm({ article, categories }: { article?: Article
                 <p className="text-muted-foreground text-xs">Separate paragraphs with a blank line. Images and rich formatting are coming in a later stage.</p>
                 <InputError message={errors.body} />
             </div>
+
+            <fieldset className="grid gap-2">
+                <legend className="mb-1 text-sm font-medium">Lead photo (optional)</legend>
+                <div className="flex flex-wrap gap-3">
+                    <label className="flex w-28 flex-col items-center gap-1 rounded border p-2 text-xs">
+                        <input type="radio" name="lead" checked={data.lead_media_id === null} onChange={() => setData('lead_media_id', null)} />
+                        No photo
+                    </label>
+                    {media.map((m) => (
+                        <label key={m.id} className="flex w-28 flex-col items-center gap-1 rounded border p-2 text-xs">
+                            <img src={m.url} alt={m.alt} className="aspect-[4/3] w-full rounded object-cover" />
+                            <input type="radio" name="lead" checked={data.lead_media_id === m.id} onChange={() => setData('lead_media_id', m.id)} />
+                            {m.is_public ? 'Approved' : 'Awaiting approval'}
+                        </label>
+                    ))}
+                </div>
+                <p className="text-muted-foreground text-xs">
+                    Upload photos in the <a href="/media" className="underline">Media library</a> first. An editor must approve a photo before the article can be published with it.
+                </p>
+                <InputError message={errors.lead_media_id} />
+            </fieldset>
 
             <div>
                 <Button type="submit" disabled={processing}>

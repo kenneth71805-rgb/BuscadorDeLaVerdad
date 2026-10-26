@@ -15,6 +15,11 @@ class StaffProfile extends Model
         return ['is_public' => 'boolean', 'archived_at' => 'datetime'];
     }
 
+    public function photo(): BelongsTo
+    {
+        return $this->belongsTo(Media::class, 'photo_media_id');
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);

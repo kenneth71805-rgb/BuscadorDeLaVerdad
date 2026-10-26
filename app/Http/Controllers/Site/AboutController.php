@@ -12,12 +12,13 @@ class AboutController extends Controller
 {
     public function __invoke()
     {
-        $profiles = StaffProfile::publicOnly()->with('category:id,name')
+        $profiles = StaffProfile::publicOnly()->with(['category:id,name', 'photo'])
             ->orderBy('sort_order')->orderBy('name')->get()
             ->map(fn (StaffProfile $p) => [
                 // Only fields meant for the public. No email, phone or account data exists on this table.
                 'id' => $p->id, 'name' => $p->name, 'position' => $p->position,
                 'category' => $p->category?->name, 'bio' => $p->bio, 'link_url' => $p->link_url,
+                'photo' => $p->photo?->is_public ? ['url' => $p->photo->url('medium'), 'alt' => $p->photo->alt] : null,
                 'archived' => $p->archived_at !== null,
             ]);
 
