@@ -7,10 +7,11 @@ type Props = {
     latest: Card[];
     sections: { name: string; slug: string; stories: Card[] }[];
     galleries: { title: string; url: string; cover: { url: string; alt: string } }[];
+    events: { title: string; location: string | null; starts_at: string; category: string | null }[];
     issues: { title: string; slug: string; url: string; issue_date: string; cover: { url: string; alt: string } | null }[];
 };
 
-export default function Home({ nav, lead, latest, sections, galleries, issues }: Props) {
+export default function Home({ nav, lead, latest, sections, galleries, events, issues }: Props) {
     return (
         <PublicLayout nav={nav}>
             <Head title="Home">
@@ -113,6 +114,31 @@ export default function Home({ nav, lead, latest, sections, galleries, issues }:
                                     </Link>
                                 ))}
                             </div>
+                        </section>
+                    )}
+
+                    {events.length > 0 && (
+                        <section className="mt-12" aria-labelledby="upcoming-events">
+                            <div className="border-ink flex items-baseline justify-between border-b-2 pb-1">
+                                <h2 id="upcoming-events" className="font-display text-forest text-2xl">
+                                    Upcoming events
+                                </h2>
+                                <Link href="/events" className="text-sm underline">
+                                    All events
+                                </Link>
+                            </div>
+                            <ul className="divide-paper-edge divide-y">
+                                {events.map((e, i) => (
+                                    <li key={i} className="py-3">
+                                        <span className="font-display text-lg">{e.title}</span>
+                                        <span className="text-ink-soft text-sm">
+                                            {' '}
+                                            · {new Date(e.starts_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
+                                            {e.location ? ` · ${e.location}` : ''}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
                         </section>
                     )}
 

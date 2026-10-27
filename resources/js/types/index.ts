@@ -26,6 +26,7 @@ export interface SharedData {
     quote: { message: string; author: string };
     auth: Auth;
     flash?: { success?: string | null };
+    unread?: number;
     [key: string]: unknown;
 }
 

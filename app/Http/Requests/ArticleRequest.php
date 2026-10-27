@@ -11,7 +11,15 @@ class ArticleRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return (bool) $this->user()?->hasRole(Role::Admin, Role::EditorInChief, Role::CategoryHead);
+        $user = $this->user();
+        if (! $user?->hasRole(Role::Admin, Role::EditorInChief, Role::CategoryHead)) {
+            return false;
+        }
+
+        // Editing an existing article: the policy decides first, so unauthorized people get a clean 403.
+        $article = $this->route('article');
+
+        return $article ? $user->can('update', $article) : true;
     }
 
     public function rules(): array

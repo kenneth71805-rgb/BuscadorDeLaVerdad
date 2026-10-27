@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Site;
 
 use App\Http\Controllers\Controller;
 use App\Models\Article;
+use App\Models\CalendarEvent;
 use App\Models\Category;
 use App\Models\Gallery;
 use App\Models\Issue;
@@ -40,6 +41,8 @@ class HomeController extends Controller
                     'title' => $g->title, 'url' => route('site.gallery', $g->slug, false),
                     'cover' => ['url' => $g->items->first()->url('medium'), 'alt' => $g->items->first()->alt],
                 ]),
+            'events' => CalendarEvent::with('category:id,name')->where('is_public', true)->where('starts_at', '>=', now()->startOfDay())
+                ->orderBy('starts_at')->limit(3)->get()->map(fn (CalendarEvent $e) => EventController::card($e)),
             'issues' => Issue::publicOnly()->with('cover')->latest('issue_date')->limit(3)->get()
                 ->map(fn (Issue $i) => IssueController::card($i)),
         ]);

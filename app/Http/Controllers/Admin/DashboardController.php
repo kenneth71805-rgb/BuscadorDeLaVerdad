@@ -6,15 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\User;
 use App\Services\ArticleStats;
+use App\Services\Deadlines;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
-    public function __invoke()
+    public function __invoke(\Illuminate\Http\Request $request)
     {
         $byStatus = ArticleStats::byStatus();
 
         return Inertia::render('admin/dashboard', [
+            'deadlines' => Deadlines::upcoming($request->user()),
             'stats' => [
                 'published' => $byStatus['published'],
                 'pending' => ArticleStats::pending($byStatus),

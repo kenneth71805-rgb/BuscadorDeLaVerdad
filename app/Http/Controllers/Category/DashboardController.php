@@ -6,6 +6,7 @@ use App\Enums\ArticleStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Services\ArticleStats;
+use App\Services\Deadlines;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -17,6 +18,7 @@ class DashboardController extends Controller
         $ids = $categories->pluck('id')->all();
 
         return Inertia::render('category/dashboard', [
+            'deadlines' => Deadlines::upcoming($request->user()),
             'categories' => $categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name]),
             'byStatus' => ArticleStats::byStatus($ids),
             'needsAttention' => Article::with('category:id,name')

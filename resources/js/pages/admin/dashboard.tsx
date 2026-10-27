@@ -1,16 +1,18 @@
+import DeadlineList, { type Deadline } from '@/components/deadline-list';
 import AppLayout from '@/layouts/app-layout';
 import { formatWhen } from '@/lib/status';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 
 type Props = {
+    deadlines: Deadline[];
     stats: { published: number; pending: number; scheduled: number; staff: number };
     recentActivity: { id: number; action: string; actor: string; at: string | null }[];
 };
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Admin dashboard', href: '/admin' }];
 
-export default function Dashboard({ stats, recentActivity }: Props) {
+export default function Dashboard({ deadlines,  stats, recentActivity }: Props) {
     const items = [
         ['Published articles', stats.published],
         ['Pending submissions', stats.pending],
@@ -30,6 +32,8 @@ export default function Dashboard({ stats, recentActivity }: Props) {
                         </div>
                     ))}
                 </dl>
+
+                <DeadlineList deadlines={deadlines} />
 
                 <section>
                     <h2 className="mb-2 text-lg font-semibold">Recent activity</h2>

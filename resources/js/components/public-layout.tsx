@@ -68,6 +68,11 @@ export default function PublicLayout({ nav, children }: PropsWithChildren<{ nav:
                                 </details>
                             </li>
                             <li>
+                                <Link href="/events" className="hover:text-forest underline-offset-4 hover:underline">
+                                    Events
+                                </Link>
+                            </li>
+                            <li>
                                 <Link href="/galleries" className="hover:text-forest underline-offset-4 hover:underline">
                                     Photos
                                 </Link>

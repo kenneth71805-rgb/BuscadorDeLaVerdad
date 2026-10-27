@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\AssignmentController;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\InboxController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\Newsroom;
@@ -50,4 +53,14 @@ Route::middleware(['auth', 'role:admin,editor_in_chief,category_head'])->prefix(
 Route::middleware(['auth', 'role:admin,editor_in_chief'])->prefix('newsroom')->name('newsroom.')->group(function () {
     Route::resource('galleries', Newsroom\GalleryController::class)->except(['show', 'destroy']);
     Route::resource('issues', Newsroom\IssueController::class)->except(['show', 'destroy']);
+    Route::resource('events', Newsroom\EventController::class)->except(['show', 'destroy']);
+});
+
+Route::middleware(['auth', 'role:admin,editor_in_chief,category_head'])->group(function () {
+    Route::get('calendar', CalendarController::class)->name('calendar');
+    Route::resource('assignments', AssignmentController::class)->except(['show', 'destroy']);
+    Route::put('assignments/{assignment}/status', [AssignmentController::class, 'status'])->name('assignments.status');
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::put('notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+    Route::put('notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
 });

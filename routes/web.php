@@ -30,6 +30,8 @@ Route::get('issues/{slug}/download', [Site\IssueController::class, 'download'])-
 Route::get('archives', [Site\ArchiveController::class, 'index'])->name('site.archives');
 Route::get('archives/{year}', [Site\ArchiveController::class, 'year'])->whereNumber('year')->name('site.archive');
 
+Route::get('events', Site\EventController::class)->name('site.events');
+
 Route::get('about', Site\AboutController::class)->name('site.about');
 Route::get('contact', [Site\ContactController::class, 'show'])->name('site.contact');
 Route::post('contact', [Site\ContactController::class, 'store'])->middleware('throttle:contact')->name('site.contact.store');

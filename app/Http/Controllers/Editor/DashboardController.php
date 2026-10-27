@@ -7,15 +7,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Category;
 use App\Services\ArticleStats;
+use App\Services\Deadlines;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
-    public function __invoke()
+    public function __invoke(\Illuminate\Http\Request $request)
     {
         $pending = array_map(fn (ArticleStatus $s) => $s->value, ArticleStats::PENDING);
 
         return Inertia::render('editor/dashboard', [
+            'deadlines' => Deadlines::upcoming($request->user()),
             'byStatus' => ArticleStats::byStatus(),
             'queue' => Article::with(['category:id,name', 'author:id,name'])
                 ->whereIn('status', [ArticleStatus::CategoryApproved->value, ArticleStatus::InReview->value])

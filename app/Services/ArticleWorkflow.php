@@ -12,6 +12,7 @@ use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Throwable;
 
 /**
  * Every status change goes through here: legal move, authorized actor,
@@ -110,5 +111,12 @@ class ArticleWorkflow
             ['from' => $from->value, 'to' => $to->value, 'reason' => $reason],
             $actor,
         );
+
+        // A notification problem must never block an editorial decision.
+        try {
+            app(ArticleNotifier::class)->handle($article->loadMissing('author'), $to, $actor, $reason);
+        } catch (Throwable $e) {
+            report($e);
+        }
     }
 }

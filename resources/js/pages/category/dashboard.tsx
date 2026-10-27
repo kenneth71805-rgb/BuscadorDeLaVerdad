@@ -1,9 +1,11 @@
+import DeadlineList, { type Deadline } from '@/components/deadline-list';
 import AppLayout from '@/layouts/app-layout';
 import { formatWhen, statusLabels } from '@/lib/status';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 
 type Props = {
+    deadlines: Deadline[];
     categories: { id: number; name: string }[];
     byStatus: Record<string, number>;
     needsAttention: { id: number; title: string; category: string; status: string; updated_at: string | null }[];
@@ -11,7 +13,7 @@ type Props = {
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'My category', href: '/category' }];
 
-export default function Dashboard({ categories, byStatus, needsAttention }: Props) {
+export default function Dashboard({ deadlines,  categories, byStatus, needsAttention }: Props) {
     const focus = ['draft', 'submitted', 'revision_requested', 'approved', 'published'];
 
     return (
@@ -32,6 +34,8 @@ export default function Dashboard({ categories, byStatus, needsAttention }: Prop
                         </div>
                     ))}
                 </dl>
+
+                <DeadlineList deadlines={deadlines} />
 
                 <section>
                     <h2 className="mb-2 text-lg font-semibold">Drafts and revision requests</h2>

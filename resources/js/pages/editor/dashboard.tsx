@@ -1,9 +1,11 @@
+import DeadlineList, { type Deadline } from '@/components/deadline-list';
 import AppLayout from '@/layouts/app-layout';
 import { formatWhen, statusLabels } from '@/lib/status';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 
 type Props = {
+    deadlines: Deadline[];
     byStatus: Record<string, number>;
     queue: { id: number; title: string; category: string; author: string; status: string; updated_at: string | null }[];
     byCategory: { id: number; name: string; pending: number }[];
@@ -11,7 +13,7 @@ type Props = {
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Editorial desk', href: '/editor' }];
 
-export default function Dashboard({ byStatus, queue, byCategory }: Props) {
+export default function Dashboard({ deadlines,  byStatus, queue, byCategory }: Props) {
     const focus = ['in_review', 'category_approved', 'revision_requested', 'approved', 'scheduled'];
 
     return (
@@ -26,6 +28,8 @@ export default function Dashboard({ byStatus, queue, byCategory }: Props) {
                         </div>
                     ))}
                 </dl>
+
+                <DeadlineList deadlines={deadlines} />
 
                 <section>
                     <h2 className="mb-2 text-lg font-semibold">Review queue (oldest first)</h2>

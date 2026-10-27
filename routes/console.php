@@ -14,3 +14,6 @@ Schedule::call(fn () => app(ArticleWorkflow::class)->publishDueScheduled())->eve
 
 // Retention: resolved contact inquiries are deleted one week after closure.
 Schedule::command('contacts:purge')->daily()->name('purge-contacts')->withoutOverlapping();
+
+// Deadline reminders and overdue notices (each sent once per assignment).
+Schedule::command('assignments:remind')->hourly()->name('remind-assignments')->withoutOverlapping();
