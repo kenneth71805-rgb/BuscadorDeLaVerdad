@@ -10,6 +10,7 @@ class ContactSubmission extends Model
         'general' => 'General question',
         'suggestion' => 'Suggestion',
         'correction' => 'Correction request',
+        'support' => 'Help request (from the website helper)',
         'other' => 'Other',
     ];
 

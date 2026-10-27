@@ -24,6 +24,7 @@ class Setting extends Model
         'about_mission' => ['nullable', 'string', 'max:2000'],
         'about_vision' => ['nullable', 'string', 'max:2000'],
         'about_principles' => ['nullable', 'string', 'max:5000'],
+        'assistant_enabled' => ['nullable', 'in:0,1'],
     ];
 
     /** @return array<string, string|null> every key in RULES, null when unset */

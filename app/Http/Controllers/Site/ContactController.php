@@ -19,7 +19,7 @@ class ContactController extends Controller
         return Inertia::render('site/contact', [
             'nav' => PublicData::nav(),
             'info' => array_intersect_key($s, array_flip(['contact_email', 'contact_address', 'facebook_url', 'instagram_url'])),
-            'types' => ContactSubmission::TYPES,
+            'types' => collect(ContactSubmission::TYPES)->except('support')->all(),
         ]);
     }
 
@@ -28,7 +28,7 @@ class ContactController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:150'],
-            'type' => ['required', Rule::in(array_keys(ContactSubmission::TYPES))],
+            'type' => ['required', Rule::in(array_keys(collect(ContactSubmission::TYPES)->except('support')->all()))],
             'message' => ['required', 'string', 'min:10', 'max:5000'],
             'consent' => ['accepted'],
             'website' => ['nullable', 'string'], // honeypot: real visitors never see or fill this

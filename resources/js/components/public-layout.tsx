@@ -1,5 +1,7 @@
 import BrandMark from '@/components/brand-mark';
-import { Link, router } from '@inertiajs/react';
+import AssistantWidget from '@/components/assistant-widget';
+import { type SharedData } from '@/types';
+import { Link, router, usePage } from '@inertiajs/react';
 import { FormEventHandler, PropsWithChildren, useState } from 'react';
 
 export type NavCategory = { name: string; slug: string };
@@ -22,6 +24,7 @@ export function formatDate(iso: string | null): string {
 
 export default function PublicLayout({ nav, children }: PropsWithChildren<{ nav: NavCategory[] }>) {
     const [q, setQ] = useState('');
+    const { assistant } = usePage<SharedData>().props;
 
     const search: FormEventHandler = (e) => {
         e.preventDefault();
@@ -120,6 +123,8 @@ export default function PublicLayout({ nav, children }: PropsWithChildren<{ nav:
             <main id="main" className="mx-auto max-w-6xl px-4 py-8">
                 {children}
             </main>
+
+            {assistant && <AssistantWidget />}
 
             <footer className="border-brass mt-12 border-t-4 border-double">
                 <div className="text-ink-soft mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-6 text-xs">

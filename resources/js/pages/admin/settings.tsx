@@ -7,9 +7,9 @@ import AppLayout from '@/layouts/app-layout';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
-type Values = Record<'contact_email' | 'contact_address' | 'facebook_url' | 'instagram_url' | 'about_history' | 'about_mission' | 'about_vision' | 'about_principles', string>;
+type Values = Record<'contact_email' | 'contact_address' | 'facebook_url' | 'instagram_url' | 'about_history' | 'about_mission' | 'about_vision' | 'about_principles', string> & { assistant_enabled: boolean };
 
-const textareas: [keyof Values, string][] = [
+const textareas: [Exclude<keyof Values, 'assistant_enabled'>, string][] = [
     ['about_history', 'Background and history'],
     ['about_mission', 'Mission'],
     ['about_vision', 'Vision'],
@@ -17,7 +17,7 @@ const textareas: [keyof Values, string][] = [
 ];
 
 export default function Settings({ settings }: { settings: Record<string, string | null> }) {
-    const { data, setData, put, processing, errors } = useForm<Values>({
+    const { data, setData, put, processing, errors, transform } = useForm<Values>({
         contact_email: settings.contact_email ?? '',
         contact_address: settings.contact_address ?? '',
         facebook_url: settings.facebook_url ?? '',
@@ -26,7 +26,9 @@ export default function Settings({ settings }: { settings: Record<string, string
         about_mission: settings.about_mission ?? '',
         about_vision: settings.about_vision ?? '',
         about_principles: settings.about_principles ?? '',
+        assistant_enabled: settings.assistant_enabled !== '0',
     });
+    transform((d) => ({ ...d, assistant_enabled: d.assistant_enabled ? '1' : '0' }));
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -61,6 +63,14 @@ export default function Settings({ settings }: { settings: Record<string, string
                     <Input id="instagram_url" type="url" value={data.instagram_url} onChange={(e) => setData('instagram_url', e.target.value)} />
                     <InputError message={errors.instagram_url} />
                 </div>
+
+                <label className="flex items-start gap-2 text-sm">
+                    <input type="checkbox" checked={data.assistant_enabled} onChange={(e) => setData('assistant_enabled', e.target.checked)} className="mt-1" />
+                    <span>
+                        Show the automated website helper on public pages.
+                        <span className="text-muted-foreground block text-xs">It is a rule-based FAQ helper (not AI). Manage its answers under Helper FAQ.</span>
+                    </span>
+                </label>
 
                 {textareas.map(([key, label]) => (
                     <div key={key} className="grid gap-2">
