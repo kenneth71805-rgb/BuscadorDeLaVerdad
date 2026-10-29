@@ -75,4 +75,17 @@ class ArticlePolicy
             default => false, // InReview, Approved, Rejected, Archived: Editor-in-Chief only
         };
     }
+
+    /**
+     * Who may propose a correction to a LIVE article. Heads only in their own categories.
+     * Whether it goes live is decided separately (Editor-in-Chief only).
+     */
+    public function correct(User $user, Article $article): bool
+    {
+        if (! $user->is_active || $article->status !== S::Published) {
+            return false;
+        }
+
+        return $user->hasRole(Role::Admin, Role::EditorInChief) || $user->headsCategory($article->category_id);
+    }
 }

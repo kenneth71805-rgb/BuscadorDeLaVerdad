@@ -29,6 +29,10 @@ class ArticleController extends Controller
             'nav' => PublicData::nav(),
             'article' => PublicData::card($article) + [
                 'lead' => PublicData::image($article, 'large'),
+                'corrected_at' => $article->corrected_at?->toIso8601String(),
+                // Only notices an editor chose to make public; internal reasons and pending text never leave the newsroom.
+                'corrections' => $article->revisions()->where('status', 'applied')->whereNotNull('public_note')->get()
+                    ->map(fn ($r) => ['note' => $r->public_note, 'at' => $r->decided_at?->toIso8601String()])->values(),
                 'paragraphs' => array_values(array_filter(preg_split('/\R{2,}/', trim($article->body)))),
             ],
             'related' => $related->map(fn (Article $a) => PublicData::card($a))->all(),

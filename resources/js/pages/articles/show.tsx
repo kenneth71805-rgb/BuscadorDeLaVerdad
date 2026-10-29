@@ -23,11 +23,14 @@ type Props = {
     };
     lead: { id: number; url: string; alt: string; caption: string | null; credit: string | null; is_public: boolean; can_release: boolean } | null;
     can_edit: boolean;
+    can_correct: boolean;
+    pending_correction: { id: number } | null;
+    corrections: { id: number; version: number; status: string; at: string | null }[];
     actions: Action[];
     history: { id: number; from: string | null; to: string; actor: string; reason: string | null; at: string | null }[];
 };
 
-export default function Show({ article, lead, can_edit, actions, history }: Props) {
+export default function Show({ article, lead, can_edit, can_correct, pending_correction, corrections, actions, history }: Props) {
     const { flash, errors } = usePage<SharedData & { errors: Record<string, string> }>().props;
     const [reason, setReason] = useState('');
     const [scheduledFor, setScheduledFor] = useState('');
@@ -94,6 +97,19 @@ export default function Show({ article, lead, can_edit, actions, history }: Prop
                                 <Link href={`/articles/${article.id}/edit`}>Edit article</Link>
                             </Button>
                         )}
+                        {pending_correction && (
+                            <p className="mb-3 rounded-md border border-amber-500/40 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+                                A correction is waiting for review. The live article is unchanged until it is approved.{' '}
+                                <Link href={`/corrections/${pending_correction.id}`} className="underline">
+                                    Open it
+                                </Link>
+                            </p>
+                        )}
+                        {can_correct && !pending_correction && (
+                            <Button asChild variant="outline" className="mb-3">
+                                <Link href={`/articles/${article.id}/correction`}>Propose a correction</Link>
+                            </Button>
+                        )}
                         {article.public_url && (
                             <p className="mb-3 text-sm">
                                 <a href={article.public_url} className="underline" target="_blank" rel="noreferrer">
@@ -132,6 +148,24 @@ export default function Show({ article, lead, can_edit, actions, history }: Prop
                             </div>
                         )}
                     </section>
+
+                    {corrections.length > 0 && (
+                        <section aria-labelledby="corr-h">
+                            <h2 id="corr-h" className="mb-2 text-lg font-semibold">
+                                Corrections
+                            </h2>
+                            <ul className="text-sm">
+                                {corrections.map((c) => (
+                                    <li key={c.id}>
+                                        <Link href={`/corrections/${c.id}`} className="underline">
+                                            Correction {c.version}
+                                        </Link>{' '}
+                                        · {c.status === 'applied' ? 'published' : 'declined'} · {formatWhen(c.at)}
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+                    )}
 
                     <section aria-labelledby="history-h">
                         <h2 id="history-h" className="mb-2 text-lg font-semibold">

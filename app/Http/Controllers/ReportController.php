@@ -14,6 +14,13 @@ class ReportController extends Controller
     public function __invoke(Request $request, ReportService $reports)
     {
         $user = $request->user();
+
+        if (! $user) {
+            return redirect()->route('login');
+        }
+
+        abort_unless($user->hasRole(Role::Admin, Role::EditorInChief, Role::CategoryHead), 403);
+
         $to = $this->day($request->query('to')) ?? now();
         $from = $this->day($request->query('from')) ?? $to->copy()->subDays(29);
         if ($from->gt($to)) {

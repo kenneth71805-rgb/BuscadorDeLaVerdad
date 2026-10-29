@@ -12,10 +12,7 @@ class ArticleView extends Model
 
     protected $guarded = [];
 
-    protected function casts(): array
-    {
-        return ['viewed_on' => 'date'];
-    }
+    // viewed_on is deliberately NOT cast: it must stay a plain 'Y-m-d' string so lookups match on every database.
 
     /** Counts a public page view. Staff and obvious crawlers are not counted; nothing about the visitor is stored. */
     public static function record(Article $article, Request $request): void

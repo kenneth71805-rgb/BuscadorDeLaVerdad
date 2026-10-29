@@ -27,12 +27,18 @@ class Article extends Model
             'status' => ArticleStatus::class,
             'published_at' => 'datetime',
             'scheduled_for' => 'datetime',
+            'corrected_at' => 'datetime',
         ];
     }
 
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(ArticleRevision::class)->orderBy('version');
     }
 
     public function leadMedia(): BelongsTo

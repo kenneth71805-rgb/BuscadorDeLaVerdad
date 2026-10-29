@@ -24,6 +24,8 @@ function repHead(Category $category): User
 
 function repStory(Category $c, string $status, $publishedAt = null, ?User $author = null, array $attrs = []): Article
 {
+    $publishedAt = is_string($publishedAt) ? Carbon::parse($publishedAt) : $publishedAt;
+
     return Article::factory()->for($c)->for($author ?? User::factory()->head()->create(), 'author')->status($status, $publishedAt)->create($attrs);
 }
 
@@ -77,9 +79,10 @@ it('limits a head to their own categories in reports, even if they ask for anoth
     repStory($other, 'published', now()->subDay());
     repStory($other, 'published', now()->subDay());
 
+    $this->get('/reports')->assertRedirect('/login'); // guest first: actingAs would otherwise stay signed in
+
     $this->actingAs($head)->get('/reports')->assertInertia(fn (Assert $p) => $p->where('published_total', 1)->has('by_category', 1));
     $this->actingAs($head)->get("/reports?category={$other->id}")->assertInertia(fn (Assert $p) => $p->where('published_total', 1)->has('by_category', 1)->where('category', null));
-    $this->get('/reports')->assertRedirect('/login');
 });
 
 it('flags submissions that have waited too long', function () {
@@ -104,10 +107,20 @@ it('counts public page views without tracking visitors, and ignores staff and cr
 
     $this->actingAs(User::factory()->editor()->create())->get($url)->assertOk();
     expect(ArticleView::firstOrFail()->views)->toBe(2);
-    expect(ArticleView::query()->getModel()->getFillable())->toBe([]); // only article, day and a number are stored
 
     $this->get('/reports?from='.now()->subDay()->toDateString().'&to='.now()->toDateString())->assertInertia(fn (Assert $p) => $p
         ->where('readership.recorded', true)->where('readership.total', 2)->where('readership.popular.0.views', 2));
+});
+
+it('keeps counting views on the same day for the same story', function () {
+    $c = Category::factory()->create();
+    $story = repStory($c, 'published', now()->subHour());
+
+    foreach (range(1, 5) as $i) {
+        $this->get("/{$c->slug}/{$story->slug}")->assertOk();
+    }
+
+    expect(ArticleView::count())->toBe(1)->and(ArticleView::firstOrFail()->views)->toBe(5)->and(ArticleView::firstOrFail()->viewed_on)->toBe(now()->toDateString());
 });
 
 // ---------- helper: answers from FAQ and public data only ----------

@@ -2,11 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Article;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Carbon;
 
-/** @extends Factory<\App\Models\Article> */
+/** @extends Factory<Article> */
 class ArticleFactory extends Factory
 {
     public function definition(): array
@@ -23,11 +25,11 @@ class ArticleFactory extends Factory
     }
 
     // status/published_at are guarded, so states set them explicitly.
-    public function status(string $status, ?\DateTimeInterface $publishedAt = null): static
+    public function status(string $status, string|\DateTimeInterface|null $publishedAt = null): static
     {
         return $this->afterMaking(function ($article) use ($status, $publishedAt) {
             $article->status = $status;
-            $article->published_at = $publishedAt;
+            $article->published_at = is_string($publishedAt) ? Carbon::parse($publishedAt) : $publishedAt;
         });
     }
 }

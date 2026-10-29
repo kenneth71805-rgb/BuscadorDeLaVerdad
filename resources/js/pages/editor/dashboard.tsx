@@ -5,6 +5,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 
 type Props = {
+    corrections: { id: number; title: string; at: string | null }[];
     deadlines: Deadline[];
     byStatus: Record<string, number>;
     queue: { id: number; title: string; category: string; author: string; status: string; updated_at: string | null }[];
@@ -13,7 +14,7 @@ type Props = {
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Editorial desk', href: '/editor' }];
 
-export default function Dashboard({ deadlines,  byStatus, queue, byCategory }: Props) {
+export default function Dashboard({ corrections, deadlines,  byStatus, queue, byCategory }: Props) {
     const focus = ['in_review', 'category_approved', 'revision_requested', 'approved', 'scheduled'];
 
     return (
@@ -52,6 +53,24 @@ export default function Dashboard({ deadlines,  byStatus, queue, byCategory }: P
                         </ul>
                     )}
                 </section>
+
+                {corrections.length > 0 && (
+                    <section aria-labelledby="corr-h">
+                        <h2 id="corr-h" className="mb-2 text-lg font-semibold">
+                            Corrections waiting for your decision
+                        </h2>
+                        <ul className="divide-y text-sm">
+                            {corrections.map((c) => (
+                                <li key={c.id} className="flex flex-wrap justify-between gap-2 py-2">
+                                    <a href={`/corrections/${c.id}`} className="font-medium underline">
+                                        {c.title}
+                                    </a>
+                                    <span className="text-muted-foreground">{formatWhen(c.at)}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+                )}
 
                 <section>
                     <h2 className="mb-2 text-lg font-semibold">Pending by category</h2>

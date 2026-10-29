@@ -120,6 +120,11 @@ class ArticleController extends Controller
                 'is_public' => $article->leadMedia->is_public, 'can_release' => $user->can('release', $article->leadMedia),
             ] : null,
             'can_edit' => $user->can('update', $article),
+            'can_correct' => $user->can('correct', $article),
+            'pending_correction' => ($pending = $article->revisions()->where('status', 'pending')->first()) ? ['id' => $pending->id] : null,
+            'corrections' => $article->revisions()->where('status', '!=', 'pending')->get()->map(fn ($r) => [
+                'id' => $r->id, 'version' => $r->version, 'status' => $r->status, 'at' => $r->decided_at?->toIso8601String(),
+            ]),
             'actions' => $this->actionsFor($request, $article),
             'history' => $article->statusHistory->map(fn (ArticleStatusHistory $h) => [
                 'id' => $h->id,

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\CorrectionController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\InboxController;
@@ -36,6 +37,10 @@ Route::middleware(['auth', 'role:category_head'])->prefix('category')->name('cat
 Route::middleware(['auth', 'role:admin,editor_in_chief,category_head'])->group(function () {
     Route::resource('articles', ArticleController::class)->except(['destroy']);
     Route::post('articles/{article}/transition', [ArticleController::class, 'transition'])->name('articles.transition');
+    Route::get('articles/{article}/correction', [CorrectionController::class, 'create'])->name('corrections.create');
+    Route::post('articles/{article}/correction', [CorrectionController::class, 'store'])->name('corrections.store');
+    Route::get('corrections/{revision}', [CorrectionController::class, 'show'])->name('corrections.show');
+    Route::put('corrections/{revision}', [CorrectionController::class, 'decide'])->name('corrections.decide');
 });
 
 Route::middleware(['auth', 'role:admin,editor_in_chief'])->prefix('inbox')->name('inbox.')->group(function () {

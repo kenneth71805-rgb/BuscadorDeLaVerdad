@@ -69,7 +69,7 @@ class ReportService
                 return $submitted && $published ? $submitted->created_at->diffInMinutes($published->created_at) / 60 : null;
             })->filter(fn ($h) => $h !== null);
 
-        return ['hours' => $hours->isEmpty() ? null : round($hours->avg(), 1), 'sample' => $hours->count()];
+        return ['hours' => $hours->isEmpty() ? null : (float) round($hours->avg(), 1), 'sample' => $hours->count()];
     }
 
     /** Pending submissions, oldest first, flagged when they have waited too long. */
@@ -93,7 +93,8 @@ class ReportService
             return ['recorded' => false, 'total' => 0, 'popular' => []];
         }
 
-        $base = ArticleView::query()->whereBetween('viewed_on', [$range[0]->toDateString(), $range[1]->toDateString()])
+        $base = ArticleView::query()->whereDate('viewed_on', '>=', $range[0]->toDateString())
+            ->whereDate('viewed_on', '<=', $range[1]->toDateString())
             ->when($categoryIds !== null, fn ($q) => $q->whereIn('article_id', Article::whereIn('category_id', $categoryIds)->select('id')));
 
         $top = (clone $base)->selectRaw('article_id, sum(views) as total')->groupBy('article_id')->orderByDesc('total')->limit(10)->get();
