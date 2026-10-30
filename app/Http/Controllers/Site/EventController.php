@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Site;
 use App\Http\Controllers\Controller;
 use App\Models\CalendarEvent;
 use App\Support\PublicData;
+use App\Support\Seo;
 use Inertia\Inertia;
 
 class EventController extends Controller
@@ -12,6 +13,7 @@ class EventController extends Controller
     public function __invoke()
     {
         return Inertia::render('site/events', [
+            'meta' => Seo::page('Events', 'Upcoming campus events covered by Los Sueños.', Seo::paged('/events')),
             'nav' => PublicData::nav(),
             'events' => CalendarEvent::with('category:id,name')->where('is_public', true)
                 ->where('starts_at', '>=', now()->startOfDay())->orderBy('starts_at')->paginate(10)

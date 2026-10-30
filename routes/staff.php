@@ -21,6 +21,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('categories', Admin\CategoryController::class)->except(['show', 'destroy']);
     Route::resource('profiles', Admin\ProfileController::class)->except(['show', 'destroy']);
     Route::get('audit', [Admin\AuditController::class, 'index'])->name('audit');
+    Route::get('backups', [Admin\BackupController::class, 'index'])->name('backups');
+    Route::post('backups', [Admin\BackupController::class, 'store'])->name('backups.store');
     Route::get('settings', [Admin\SettingsController::class, 'edit'])->name('settings.edit');
     Route::put('settings', [Admin\SettingsController::class, 'update'])->name('settings.update');
 });

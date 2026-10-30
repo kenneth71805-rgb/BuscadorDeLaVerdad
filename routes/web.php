@@ -35,6 +35,9 @@ Route::post('assistant/escalate', [Site\AssistantController::class, 'escalate'])
 
 Route::get('events', Site\EventController::class)->name('site.events');
 
+Route::get('sitemap.xml', Site\SitemapController::class)->name('site.sitemap');
+Route::get('robots.txt', Site\RobotsController::class)->name('site.robots');
+
 Route::get('about', Site\AboutController::class)->name('site.about');
 Route::get('contact', [Site\ContactController::class, 'show'])->name('site.contact');
 Route::post('contact', [Site\ContactController::class, 'store'])->middleware('throttle:contact')->name('site.contact.store');

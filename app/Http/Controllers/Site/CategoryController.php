@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Category;
 use App\Support\PublicData;
+use App\Support\Seo;
 use Inertia\Inertia;
 
 class CategoryController extends Controller
@@ -20,6 +21,7 @@ class CategoryController extends Controller
             ->through(fn (Article $a) => PublicData::card($a));
 
         return Inertia::render('site/category', [
+            'meta' => Seo::page($category->name, $category->description ?: "Stories from {$category->name}.", Seo::paged('/'.$category->slug)),
             'nav' => PublicData::nav(),
             'category' => ['name' => $category->name, 'slug' => $category->slug, 'description' => $category->description],
             'articles' => $articles,

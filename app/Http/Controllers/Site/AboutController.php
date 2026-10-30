@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use App\Models\StaffProfile;
 use App\Support\PublicData;
+use App\Support\Seo;
 use Inertia\Inertia;
 
 class AboutController extends Controller
@@ -23,6 +24,7 @@ class AboutController extends Controller
             ]);
 
         return Inertia::render('site/about', [
+            'meta' => Seo::page('About', Setting::allValues()['about_mission'] ?? null, '/about'),
             'nav' => PublicData::nav(),
             'content' => Setting::allValues(),
             'current' => $profiles->where('archived', false)->values(),

@@ -73,6 +73,7 @@ class StaffController extends Controller
             $user->forceFill(['name' => $data['name'], 'email' => $data['email']] + $new);
             if (! empty($data['password'])) {
                 $user->password = $data['password'];
+                $user->setRememberToken(\Illuminate\Support\Str::random(60)); // signs out "remember me" logins too
             }
             $user->save();
             $user->categories()->sync($this->categoryIds($data));
@@ -95,7 +96,7 @@ class StaffController extends Controller
             AuditLog::record('staff.updated', $user, $changes, $request->user());
         });
 
-        if (! $user->is_active && config('session.driver') === 'database') {
+        if ((! $user->is_active || ! empty($data['password'])) && config('session.driver') === 'database') {
             DB::table('sessions')->where('user_id', $user->id)->delete(); // revoke live sessions
         }
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Gallery;
 use App\Models\Media;
 use App\Support\PublicData;
+use App\Support\Seo;
 use Inertia\Inertia;
 
 class GalleryController extends Controller
@@ -22,7 +23,8 @@ class GalleryController extends Controller
                 'published_at' => $g->published_at?->toIso8601String(),
             ]);
 
-        return Inertia::render('site/galleries', ['nav' => PublicData::nav(), 'galleries' => $galleries]);
+        return Inertia::render('site/galleries', [
+            'meta' => Seo::page('Photojournalism', 'Photo galleries from Los Sueños.', Seo::paged('/galleries')),'nav' => PublicData::nav(), 'galleries' => $galleries]);
     }
 
     public function show(string $slug)
@@ -37,6 +39,7 @@ class GalleryController extends Controller
         abort_if($photos->isEmpty(), 404);
 
         return Inertia::render('site/gallery', [
+            'meta' => Seo::page($gallery->title, $gallery->description ?: "Photos: {$gallery->title}", route('site.gallery', $gallery->slug, false), ['image' => url($photos->first()['url'])]),
             'nav' => PublicData::nav(),
             'gallery' => ['title' => $gallery->title, 'description' => $gallery->description, 'published_at' => $gallery->published_at?->toIso8601String()],
             'photos' => $photos,

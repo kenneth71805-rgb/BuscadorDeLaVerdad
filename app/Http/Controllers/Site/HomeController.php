@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Gallery;
 use App\Models\Issue;
 use App\Support\PublicData;
+use App\Support\Seo;
 use Inertia\Inertia;
 
 class HomeController extends Controller
@@ -32,6 +33,7 @@ class HomeController extends Controller
             ->filter(fn (array $s) => count($s['stories']) > 0)->take(4)->values();
 
         return Inertia::render('site/home', [
+            'meta' => Seo::page('Home', null, '/', ['image' => $lead?->leadMedia?->is_public ? url($lead->leadMedia->url('large')) : null]),
             'nav' => PublicData::nav(),
             'lead' => $lead ? PublicData::card($lead) : null,
             'latest' => $latest->map(fn (Article $a) => PublicData::card($a))->all(),

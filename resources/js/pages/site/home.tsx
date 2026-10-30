@@ -14,9 +14,7 @@ type Props = {
 export default function Home({ nav, lead, latest, sections, galleries, events, issues }: Props) {
     return (
         <PublicLayout nav={nav}>
-            <Head title="Home">
-                <meta name="description" content="Los Sueños – Buscador De La Verdad, the official student publication of Kolehiyo ng Lungsod ng Dasmariñas." />
-            </Head>
+            <Head title="Home" />
 
             {!lead ? (
                 <section className="mx-auto max-w-xl py-20 text-center">

@@ -12,14 +12,7 @@ export default function Article({ nav, article, related }: Props) {
 
     return (
         <PublicLayout nav={nav}>
-            <Head title={article.title}>
-                <meta name="description" content={description} />
-                <meta property="og:type" content="article" />
-                <meta property="og:title" content={article.title} />
-                <meta property="og:description" content={description} />
-                <meta property="og:site_name" content="Los Sueños – Buscador De La Verdad" />
-                {article.lead && <meta property="og:image" content={article.lead.url} />}
-            </Head>
+            <Head title={article.title} />
 
             <article className="mx-auto max-w-[68ch]">
                 <Link href={`/${article.category.slug}`} className="text-brass-text text-xs tracking-widest uppercase">

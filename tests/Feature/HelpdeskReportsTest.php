@@ -67,7 +67,7 @@ it('reports real publishing numbers, by day, by category, and the average time t
     $this->actingAs(User::factory()->editor()->create())->get('/reports?from=2026-10-01&to=2026-10-26')->assertInertia(fn (Assert $p) => $p
         ->component('reports/index')
         ->where('published_total', 2)->has('published_by_day', 1)->where('published_by_day.0.count', 2)
-        ->where('turnaround.hours', 72.0)->where('turnaround.sample', 2)
+        ->where('turnaround.hours', fn ($hours) => (float) $hours === 72.0)->where('turnaround.sample', 2)
         ->where('readership.recorded', false));
 });
 

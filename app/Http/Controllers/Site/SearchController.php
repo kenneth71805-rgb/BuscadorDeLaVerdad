@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Site;
 use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Support\PublicData;
+use App\Support\Seo;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -24,6 +25,7 @@ class SearchController extends Controller
                 ->through(fn (Article $a) => PublicData::card($a));
         }
 
-        return Inertia::render('site/search', ['nav' => PublicData::nav(), 'q' => $q, 'results' => $results]);
+        return Inertia::render('site/search', [
+            'meta' => Seo::page('Search', null, '/search', ['robots' => 'noindex,follow']),'nav' => PublicData::nav(), 'q' => $q, 'results' => $results]);
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Category;
 use App\Support\PublicData;
+use App\Support\Seo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Inertia\Inertia;
@@ -27,7 +28,8 @@ class ArchiveController extends Controller
             }
         }
 
-        return Inertia::render('site/archives', ['nav' => PublicData::nav(), 'years' => $years]);
+        return Inertia::render('site/archives', [
+            'meta' => Seo::page('Archives', 'Browse every published story by year.', '/archives'),'nav' => PublicData::nav(), 'years' => $years]);
     }
 
     public function year(Request $request, int $year)
@@ -43,6 +45,7 @@ class ArchiveController extends Controller
             ->through(fn (Article $a) => PublicData::card($a));
 
         return Inertia::render('site/archive-year', [
+            'meta' => Seo::page("Archive {$year}", "Stories published in {$year}.", Seo::paged("/archives/{$year}")),
             'nav' => PublicData::nav(),
             'year' => $year,
             'category' => $category?->slug,

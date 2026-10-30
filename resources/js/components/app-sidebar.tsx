@@ -3,7 +3,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BarChart3, Bell, BookOpen, CalendarDays, CalendarPlus, ClipboardList, GalleryHorizontal, Image, Inbox, LayoutGrid, Newspaper, Settings, MessageCircleQuestion, ScrollText, Tags, UserSquare, Users } from 'lucide-react';
+import { BarChart3, Database, Bell, BookOpen, CalendarDays, CalendarPlus, ClipboardList, GalleryHorizontal, Image, Inbox, LayoutGrid, Newspaper, Settings, MessageCircleQuestion, ScrollText, Tags, UserSquare, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const navByRole: Record<string, NavItem[]> = {
@@ -24,6 +24,7 @@ const navByRole: Record<string, NavItem[]> = {
         { title: 'Helper FAQ', url: '/newsroom/faq', icon: MessageCircleQuestion },
         { title: 'Inbox', url: '/inbox', icon: Inbox },
         { title: 'Audit log', url: '/admin/audit', icon: ScrollText },
+        { title: 'Backups', url: '/admin/backups', icon: Database },
         { title: 'Site settings', url: '/admin/settings', icon: Settings },
     ],
     editor_in_chief: [

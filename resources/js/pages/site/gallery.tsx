@@ -7,10 +7,7 @@ type Props = { nav: NavCategory[]; gallery: { title: string; description: string
 export default function Gallery({ nav, gallery, photos }: Props) {
     return (
         <PublicLayout nav={nav}>
-            <Head title={gallery.title}>
-                <meta property="og:title" content={gallery.title} />
-                {photos[0] && <meta property="og:image" content={photos[0].url} />}
-            </Head>
+            <Head title={gallery.title} />
             <h1 className="font-display text-forest text-4xl font-semibold">{gallery.title}</h1>
             <p className="text-ink-soft mt-1 text-sm">{formatDate(gallery.published_at)}</p>
             {gallery.description && <p className="mt-3 max-w-[68ch] text-lg">{gallery.description}</p>}

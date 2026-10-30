@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ContactSubmission;
 use App\Models\Setting;
 use App\Support\PublicData;
+use App\Support\Seo;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -17,6 +18,7 @@ class ContactController extends Controller
         $s = Setting::allValues();
 
         return Inertia::render('site/contact', [
+            'meta' => Seo::page('Contact', 'How to reach the editors of Los Sueños.', '/contact'),
             'nav' => PublicData::nav(),
             'info' => array_intersect_key($s, array_flip(['contact_email', 'contact_address', 'facebook_url', 'instagram_url'])),
             'types' => collect(ContactSubmission::TYPES)->except('support')->all(),

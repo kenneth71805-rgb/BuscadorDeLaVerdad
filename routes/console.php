@@ -17,3 +17,6 @@ Schedule::command('contacts:purge')->daily()->name('purge-contacts')->withoutOve
 
 // Deadline reminders and overdue notices (each sent once per assignment).
 Schedule::command('assignments:remind')->hourly()->name('remind-assignments')->withoutOverlapping();
+
+// Nightly backup of the database and all uploaded files (kept: see BACKUP_KEEP).
+Schedule::command('backup:run')->dailyAt('02:00')->name('nightly-backup')->withoutOverlapping();
